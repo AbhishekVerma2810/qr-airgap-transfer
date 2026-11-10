@@ -1,0 +1,18 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 960px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+nav button.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+button,
+input[type='file'] {
+  margin: 0.25rem 0.25rem 0.25rem 0;
+}
+.hint {
+  color: #666;
+  font-size: 0.9rem;
+}
