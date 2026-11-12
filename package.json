@@ -1,0 +1,30 @@
+{
+  "name": "qr-file-transfer",
+  "version": "1.0.0",
+  "description": "",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "python -m http.server 8080",
+    "sync": "node scripts/sync-shared.js",
+    "test": "node --test tests/*.test.js",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "globals": "^17.14.0",
+    "jsqr": "^1.4.0",
+    "prettier": "^3.9.10",
+    "qrcode-generator": "^2.0.4"
+  },
+  "private": true
+}

@@ -9,6 +9,7 @@ export const READER_HTML = `
   <button id="restore-button" hidden>Save folder</button>
   <video id="scan-video" playsinline muted></video>
   <progress id="scan-progress" value="0" max="1"></progress>
+  <p id="scan-percent" class="percent" role="status"></p>
   <p id="scan-summary"></p>
   <p id="scan-missing"></p>
   <p id="scan-status" role="status"></p>

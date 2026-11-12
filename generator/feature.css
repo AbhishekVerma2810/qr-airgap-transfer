@@ -1,0 +1,72 @@
+#qr-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+#qr-grid figure {
+  margin: 0;
+  text-align: center;
+}
+#qr-grid canvas {
+  width: 240px;
+  height: 240px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+/* Slideshow: one QR code covers the whole page, as large and sharp as possible. */
+#qr-grid.slideshow {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  margin: 0;
+  gap: 0;
+  background: #fff;
+  align-items: center;
+  justify-content: center;
+}
+#qr-grid.slideshow figure {
+  display: none;
+}
+#qr-grid.slideshow figure.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#qr-grid.slideshow canvas {
+  width: min(92vh, 98vw);
+  height: min(92vh, 98vw);
+  border: 0;
+  cursor: default;
+  image-rendering: pixelated;
+}
+#qr-grid.slideshow figcaption {
+  font-size: 1.2rem;
+  color: #333;
+}
+/* Small corner controls so the QR code keeps its size. */
+#slideshow-controls {
+  position: fixed;
+  top: 0.4rem;
+  right: 0.4rem;
+  z-index: 1001;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+#slideshow-controls:hover {
+  opacity: 1;
+}
+#slideshow-controls[hidden] {
+  display: none;
+}
+#slideshow-controls button {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+}
+#slide-speed {
+  width: 4.5rem;
+  font-size: 0.75rem;
+}

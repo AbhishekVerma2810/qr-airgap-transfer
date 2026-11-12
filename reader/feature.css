@@ -9,3 +9,8 @@
   width: 100%;
   max-width: 480px;
 }
+.percent {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.25rem 0;
+}
