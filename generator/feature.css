@@ -15,32 +15,25 @@
   border: 1px solid #ccc;
 }
 /* Slideshow: one QR code covers the whole page, as large and sharp as possible. */
-#qr-grid.slideshow {
+#slide-stage {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  margin: 0;
-  gap: 0;
   background: #fff;
-  align-items: center;
-  justify-content: center;
-}
-#qr-grid.slideshow figure {
-  display: none;
-}
-#qr-grid.slideshow figure.active {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
-#qr-grid.slideshow canvas {
+#slide-stage[hidden] {
+  display: none;
+}
+#slide-stage canvas {
   width: min(92vh, 98vw);
   height: min(92vh, 98vw);
-  border: 0;
-  cursor: default;
   image-rendering: pixelated;
 }
-#qr-grid.slideshow figcaption {
+#slide-stage figcaption {
   font-size: 1.2rem;
   color: #333;
 }
@@ -66,7 +59,34 @@
   padding: 0.15rem 0.45rem;
   font-size: 0.75rem;
 }
-#slide-speed {
+#slide-speed,
+#slide-jump {
   width: 4.5rem;
   font-size: 0.75rem;
+}
+#slide-info {
+  padding: 0.15rem 0.4rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  white-space: nowrap;
+}
+/* Folder tree with checkboxes. */
+#folder-tree {
+  max-height: 320px;
+  overflow: auto;
+  margin: 0.5rem 0;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+#folder-tree ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 1.2rem;
+}
+#folder-tree > ul {
+  padding-left: 0;
+}
+#folder-tree summary {
+  cursor: pointer;
 }

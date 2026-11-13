@@ -24,16 +24,17 @@ Restore:  folder: archive → readZip → path check → write tree (or download
 
 ## Generator modules (`generator/`)
 
-| Module                        | Single responsibility                       |
-| ----------------------------- | ------------------------------------------- |
-| `feature.js`                  | Plug-in entry (`mount`)                     |
-| `src/config.js`               | Generator constants                         |
-| `src/protocol/chunker.js`     | File → list of packet texts                 |
-| `src/archive/zipWriter.js`    | Store-only ZIP writer                       |
-| `src/archive/folderReader.js` | Folder input or directory handle → entries  |
-| `src/archive/packFolder.js`   | Entries → single `folder:<name>.zip` "file" |
-| `src/qr/renderer.js`          | Text → QR canvas (wraps `lib/qrcode.js`)    |
-| `src/ui/*`                    | DOM wiring only                             |
+| Module                        | Single responsibility                                                        |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `feature.js`                  | Plug-in entry (`mount`)                                                      |
+| `src/config.js`               | Generator constants                                                          |
+| `src/protocol/chunker.js`     | File → list of packet texts                                                  |
+| `src/archive/zipWriter.js`    | Store-only ZIP writer                                                        |
+| `src/archive/folderReader.js` | Folder input or directory handle → entries                                   |
+| `src/archive/packFolder.js`   | Entries → single `folder:<name>.zip` "file"                                  |
+| `src/qr/renderer.js`          | Text → QR canvas (wraps `lib/qrcode.js`)                                     |
+| `src/ui/slideshow.js`         | Full-page slideshow: draws one code on demand, speed, jump, pause, time left |
+| `src/ui/*`                    | DOM wiring only                                                              |
 
 ## Reader modules (`reader/`)
 
@@ -41,6 +42,7 @@ Restore:  folder: archive → readZip → path check → write tree (or download
 | -------------------------------------- | -------------------------------------------------- |
 | `feature.js`                           | Plug-in entry (`mount`)                            |
 | `src/protocol/assembler.js`            | Collect packets, report progress, rebuild + verify |
+| `src/progress/rateTracker.js`          | Recent scanning speed -> "time left" estimate      |
 | `src/archive/zipReader.js`             | Store-only ZIP reader (per-entry CRC check)        |
 | `src/archive/pathGuard.js`             | Rejects `..`, absolute and drive paths (zip-slip)  |
 | `src/archive/folderWriter.js`          | Entries → real folders via directory handle        |
@@ -50,7 +52,7 @@ Restore:  folder: archive → readZip → path check → write tree (or download
 
 ## Shared (`shared/`, copied into both features)
 
-`config.js` (protocol and ZIP constants), `codec/{base64,crc32,compressor}.js`, `protocol/packet.js`, `archive/folderArchive.js`, `ui/{dom,assets}.js`.
+`config.js` (protocol, ZIP and time constants), `codec/{base64,crc32,compressor}.js`, `protocol/packet.js`, `archive/folderArchive.js`, `time/duration.js`, `ui/{dom,assets}.js`.
 
 Edit only `shared/`, then `npm run sync`. `tests/structure.test.js` fails if a copy drifts and if one feature imports the other or the shell.
 

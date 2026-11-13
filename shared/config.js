@@ -8,6 +8,9 @@ export const BASE64_SLICE_SIZE = 0x8000;
 /** Folder support: a folder travels as one ZIP whose name carries this prefix. */
 export const FOLDER_PREFIX = 'folder:';
 
+/** Time units used by the "time left" displays. */
+export const TIME = { msPerSecond: 1000, secondsPerMinute: 60, secondsPerHour: 3600 };
+
 /** ZIP format constants (store-only archives). */
 export const ZIP = {
   localSignature: 0x04034b50,

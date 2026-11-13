@@ -1,23 +1,17 @@
-import {
-  BYTES_PER_KB,
-  CHUNK_SIZE,
-  LARGE_INPUT_BYTES,
-  PART_NUMBER_DIGITS,
-  SLIDESHOW_INTERVAL_MS,
-  SLIDESHOW_SPEED,
-} from '../config.js';
+import { CHUNK_SIZE, LARGE_INPUT_BYTES, PART_NUMBER_DIGITS, PREVIEW_LIMIT } from '../config.js';
 import { createZip } from '../archive/zipWriter.js';
-import { packFolder } from '../archive/packFolder.js';
 import { entriesFromDirectoryHandle, entriesFromFileList } from '../archive/folderReader.js';
 import { splitIntoPackets } from '../protocol/chunker.js';
 import { renderQrCanvas } from '../qr/renderer.js';
 import { byId, downloadAs } from '../shared/ui/dom.js';
+import { formatDuration } from '../shared/time/duration.js';
 import { readFileBytes } from './files.js';
+import { formatSize } from './format.js';
+import { hideFolderTree, showFolderTree } from './folderTree.js';
+import { initSlideshow, setSlidePackets, slideDelay, stopSlideshow } from './slideshow.js';
 
-let slideTimer = null;
-let slideIndex = 0;
-/** Canvases of the codes currently shown, in part order. */
-let currentCanvases = [];
+/** Packet texts of the current file; QR codes are drawn from these only when needed. */
+let currentPackets = [];
 /** What the user picked: `{ label, size, load() }` or null. */
 let selection = null;
 
@@ -40,96 +34,31 @@ function addCanvasToGrid(canvas, index, fileName) {
   byId('qr-grid').append(figure);
 }
 
-function isSlideshowOn() {
-  return document.body.classList.contains('slideshow-on');
-}
-
-function slideFigures() {
-  return [...byId('qr-grid').children];
-}
-
-/** Delay between slides, read live so a speed change affects the next slide at once. */
-function slideDelay() {
-  const { min, max } = SLIDESHOW_SPEED;
-  const value = Number(byId('slide-speed').value) || SLIDESHOW_INTERVAL_MS;
-  return Math.min(max, Math.max(min, value));
-}
-
-function showSlide() {
-  slideFigures().forEach((f, i) => f.classList.toggle('active', i === slideIndex));
-}
-
-function scheduleNext() {
-  clearTimeout(slideTimer);
-  if (slideFigures().length < 2) return;
-  slideTimer = setTimeout(() => stepSlide(1), slideDelay());
-}
-
-/** Move forward (1) or back (-1), wrapping around, and restart the timer. */
-function stepSlide(direction) {
-  const count = slideFigures().length;
-  slideIndex = (slideIndex + direction + count) % count;
-  showSlide();
-  scheduleNext();
-}
-
-function stopSlideshow() {
-  clearTimeout(slideTimer);
-  slideTimer = null;
-  document.body.classList.remove('slideshow-on');
-  byId('slideshow-controls').hidden = true;
-  byId('qr-grid').classList.remove('slideshow');
-  if (document.fullscreenElement) document.exitFullscreen();
-}
-
-/** Show only the QR code, covering the whole page (and the whole screen when allowed). */
-function startSlideshow() {
-  if (!slideFigures().length) return;
-  document.body.classList.add('slideshow-on');
-  byId('slideshow-controls').hidden = false;
-  byId('qr-grid').classList.add('slideshow');
-  document.documentElement.requestFullscreen?.().catch(() => {});
-  slideIndex = 0;
-  showSlide();
-  scheduleNext();
-}
-
-/** Leaving full screen (for example with Esc) also ends the slideshow. */
-function onFullscreenChange() {
-  if (!document.fullscreenElement && isSlideshowOn()) stopSlideshow();
-}
-
-const KEY_ACTIONS = {
-  Escape: stopSlideshow,
-  ArrowLeft: () => stepSlide(-1),
-  ArrowRight: () => stepSlide(1),
-};
-
-function onKeyDown(event) {
-  if (!isSlideshowOn()) return;
-  if (event.target.id === 'slide-speed' && event.key !== 'Escape') return;
-  KEY_ACTIONS[event.key]?.();
-}
-
-function toggleSlideshow() {
-  if (isSlideshowOn()) stopSlideshow();
-  else startSlideshow();
-}
-
-function formatKb(bytes) {
-  return `${Math.ceil(bytes / BYTES_PER_KB)} KB`;
+/** Draw only the first few codes as a preview; the rest are drawn on demand. */
+function renderPreview(packets, fileName) {
+  byId('qr-grid').replaceChildren();
+  packets
+    .slice(0, PREVIEW_LIMIT)
+    .forEach((text, i) => addCanvasToGrid(renderQrCanvas(text), i, fileName));
 }
 
 function selectFile(file) {
-  selection = { label: file.name, size: file.size, load: () => readFileBytes(file) };
-  showStatus(`Selected file "${file.name}" (${formatKb(file.size)}).`);
+  hideFolderTree();
+  selection = {
+    label: file.name,
+    size: file.size,
+    fileCount: 1,
+    load: () => readFileBytes(file),
+  };
+  showStatus(`Selected file "${file.name}" (${formatSize(file.size)}).`);
 }
 
-function selectFolder({ name, entries }) {
-  const size = entries.reduce((sum, entry) => sum + entry.bytes.length, 0);
-  const files = entries.filter((entry) => !entry.isDir).length;
-  selection = { label: name, size, load: async () => packFolder(name, entries) };
-  showStatus(`Selected folder "${name}": ${files} file(s), ${formatKb(size)}.`);
+/** The folder's checkbox tree reports every change, which replaces the selection. */
+function selectFolder(folder) {
+  showFolderTree(folder, (chosen) => {
+    selection = chosen;
+    showStatus(chosen.summary);
+  });
 }
 
 function isSkipHeavyChecked() {
@@ -148,38 +77,55 @@ async function pickFolderFromInput(files) {
 
 function userAcceptsSize() {
   if (selection.size <= LARGE_INPUT_BYTES) return true;
-  return confirm(`This is ${formatKb(selection.size)} and will need many QR codes. Continue?`);
+  return confirm(`This is ${formatSize(selection.size)} and will need many QR codes. Continue?`);
+}
+
+function createdMessage(count) {
+  const show = formatDuration(count * slideDelay());
+  const shown = Math.min(count, PREVIEW_LIMIT);
+  return (
+    `Created ${count} QR code(s); previewing the first ${shown}. ` +
+    `A slideshow at the current speed takes about ${show}. ` +
+    'Click a preview to download it, or use Download all.'
+  );
 }
 
 async function generate() {
   if (!selection) return showStatus('Choose a file or folder first.');
+  if (!selection.fileCount) return showStatus('Nothing is selected. Tick at least one file.');
   if (!userAcceptsSize()) return;
   stopSlideshow();
   byId('qr-grid').replaceChildren();
-  currentCanvases = [];
   byId('download-all-button').hidden = true;
   showStatus('Working...');
   const file = await selection.load();
-  const packets = await splitIntoPackets(file, Number(byId('chunk-size').value));
-  currentCanvases = packets.map((text) => renderQrCanvas(text));
-  currentCanvases.forEach((canvas, i) => addCanvasToGrid(canvas, i, selection.label));
+  currentPackets = await splitIntoPackets(file, Number(byId('chunk-size').value));
+  setSlidePackets(currentPackets);
+  renderPreview(currentPackets, selection.label);
   byId('download-all-button').hidden = false;
-  showStatus(
-    `Created ${packets.length} QR code(s). Click a code to download it, or use Download all.`,
-  );
+  showStatus(createdMessage(currentPackets.length));
 }
 
-async function toPngEntry(canvas, index) {
-  const blob = await canvasToPngBlob(canvas);
+async function toPngEntry(text, index) {
+  const blob = await canvasToPngBlob(renderQrCanvas(text));
   const bytes = new Uint8Array(await blob.arrayBuffer());
   const path = `part-${String(index + 1).padStart(PART_NUMBER_DIGITS, '0')}.png`;
   return { path, isDir: false, bytes };
 }
 
+/** One code at a time, so memory holds only finished PNGs, never all canvases. */
+async function packAllCodes() {
+  const entries = [];
+  for (const [index, text] of currentPackets.entries()) {
+    showStatus(`Packing QR code ${index + 1} of ${currentPackets.length}...`);
+    entries.push(await toPngEntry(text, index));
+  }
+  return entries;
+}
+
 async function downloadAll() {
-  if (!currentCanvases.length) return;
-  showStatus('Packing all QR codes...');
-  const entries = await Promise.all(currentCanvases.map(toPngEntry));
+  if (!currentPackets.length) return;
+  const entries = await packAllCodes();
   downloadAs(`${selection.label}-qr-codes.zip`, createZip(entries));
   showStatus(`Downloaded ${entries.length} QR code(s) in one ZIP.`);
 }
@@ -200,29 +146,10 @@ function initChunkSlider() {
   byId('chunk-size-label').textContent = CHUNK_SIZE.default;
 }
 
-function initSpeedBox() {
-  const box = byId('slide-speed');
-  box.min = SLIDESHOW_SPEED.min;
-  box.max = SLIDESHOW_SPEED.max;
-  box.step = SLIDESHOW_SPEED.step;
-  box.value = SLIDESHOW_INTERVAL_MS;
-  box.addEventListener('input', scheduleNext);
-}
-
-function initSlideshowControls() {
-  initSpeedBox();
-  byId('slide-prev').addEventListener('click', () => stepSlide(-1));
-  byId('slide-next').addEventListener('click', () => stepSlide(1));
-  byId('slideshow-button').addEventListener('click', toggleSlideshow);
-  byId('slideshow-stop').addEventListener('click', stopSlideshow);
-  document.addEventListener('fullscreenchange', onFullscreenChange);
-  document.addEventListener('keydown', onKeyDown);
-}
-
 /** Connect the Generate tab controls. */
 export function initGenerateView() {
   initChunkSlider();
-  initSlideshowControls();
+  initSlideshow();
   byId('gen-file').addEventListener(
     'change',
     (e) => e.target.files[0] && selectFile(e.target.files[0]),

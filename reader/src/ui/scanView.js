@@ -1,4 +1,5 @@
 import { Assembler, AddResult } from '../protocol/assembler.js';
+import { RateTracker } from '../progress/rateTracker.js';
 import { CameraScanner } from '../qr/cameraScanner.js';
 import { readQrFromFile } from '../qr/reader.js';
 import { isFolderArchive } from '../shared/archive/folderArchive.js';
@@ -7,6 +8,7 @@ import { renderProgress } from './progressView.js';
 import { describeFolder, saveFolder } from './resultSaver.js';
 
 const scanner = new CameraScanner();
+const rate = new RateTracker();
 let assembler = new Assembler();
 let finished = false;
 let pendingFolder = null;
@@ -40,11 +42,18 @@ async function restorePendingFolder() {
   }
 }
 
+/** Update the progress display, including the time-left estimate. */
+function showProgress() {
+  const progress = assembler.progress;
+  rate.record(progress.received, Date.now());
+  renderProgress(progress, rate.estimateMs(progress.missing.length));
+}
+
 async function handleText(text) {
   const result = assembler.add(text);
   if (result === AddResult.OTHER_FILE)
     showStatus('That QR belongs to a different file. Press Reset to switch.');
-  renderProgress(assembler.progress);
+  showProgress();
   await finishIfComplete().catch((error) => showStatus(error.message));
 }
 
@@ -61,6 +70,7 @@ function reset() {
   assembler = new Assembler();
   finished = false;
   pendingFolder = null;
+  rate.reset();
   byId('restore-button').hidden = true;
   renderProgress(assembler.progress);
   showStatus('');
