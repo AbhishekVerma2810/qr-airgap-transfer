@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Offline browser app, plug-and-play: `generator/` and `reader/` are independent feature folders loaded by a small shell (`index.html`, `src/shell.js`, `src/featureLoader.js`). Deleting either folder must leave the other working.
+Offline browser app, plug-and-play: `generator/`, `reader/`, `textgen/` and `textscan/` are independent feature folders loaded by a small shell (`index.html`, `src/shell.js`, `src/featureLoader.js`). Deleting any folder must leave the others working.
 
 ## Commands
 

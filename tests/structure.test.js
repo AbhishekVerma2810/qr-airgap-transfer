@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { TARGETS, findDrift } from '../scripts/sync-shared.js';
+import { FEATURE_NAMES } from '../src/featureLoader.js';
 
 function jsFiles(directory) {
   return readdirSync(directory).flatMap((name) => {
@@ -22,20 +23,23 @@ function importsOf(file) {
   return [...readFileSync(file, 'utf8').matchAll(/from\s+'([^']+)'/g)].map((m) => m[1]);
 }
 
-for (const [feature, other] of [
-  ['generator', 'reader'],
-  ['reader', 'generator'],
-]) {
-  test(`${feature}/ never imports ${other}/ or the app shell`, () => {
+const FEATURES = FEATURE_NAMES;
+
+for (const feature of FEATURES) {
+  test(`${feature}/ never imports another feature or the app shell`, () => {
+    const others = FEATURES.filter((name) => name !== feature);
     const offenders = jsFiles(feature).filter((file) =>
-      importsOf(file).some((path) => path.includes(`/${other}/`) || path.includes('/src/shell')),
+      importsOf(file).some(
+        (path) =>
+          others.some((other) => path.includes(`/${other}/`)) || path.includes('/src/shell'),
+      ),
     );
     assert.deepEqual(offenders, []);
   });
 }
 
 test('feature imports stay inside their own folder', () => {
-  for (const feature of ['generator', 'reader']) {
+  for (const feature of FEATURES) {
     for (const file of jsFiles(feature)) {
       const escaping = importsOf(file)
         .filter((p) => p.startsWith('..'))

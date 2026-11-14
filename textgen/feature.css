@@ -1,0 +1,23 @@
+#txt-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+#txt-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+#txt-grid figure {
+  margin: 0;
+  text-align: center;
+}
+#txt-grid canvas {
+  width: 240px;
+  height: 240px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  image-rendering: pixelated;
+}

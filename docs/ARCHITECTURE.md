@@ -6,6 +6,8 @@
 index.html, style.css, src/   shell: finds feature folders, builds one tab per folder found
 generator/                    feature: file/folder -> QR codes   (self-contained)
 reader/                       feature: QR codes -> file/folder   (self-contained)
+textgen/                      feature: text -> QR codes           (self-contained)
+textscan/                     feature: QR codes -> text           (self-contained)
 shared/                       source of truth for code both features need (dev-only)
 scripts/sync-shared.js        copies shared/ into <feature>/src/shared
 tests/                        unit, contract, shell and structure tests (dev-only)
@@ -50,9 +52,23 @@ Restore:  folder: archive → readZip → path check → write tree (or download
 | `src/ui/resultSaver.js`                | Save rebuilt folder (write tree or ZIP download)   |
 | `src/ui/*`                             | DOM wiring only                                    |
 
-## Shared (`shared/`, copied into both features)
+## Text modules (`textgen/` and `textscan/`)
 
-`config.js` (protocol, ZIP and time constants), `codec/{base64,crc32,compressor}.js`, `protocol/packet.js`, `archive/folderArchive.js`, `time/duration.js`, `ui/{dom,assets}.js`.
+| Module                                          | Single responsibility                         |
+| ----------------------------------------------- | --------------------------------------------- |
+| `textgen/feature.js`, `textscan/feature.js`     | Plug-in entries (`mount`)                     |
+| `textgen/src/qr/renderer.js`                    | Text -> QR canvas (UTF-8)                     |
+| `textgen/src/ui/*`                              | DOM wiring for text input and QR display      |
+| `textscan/src/protocol/textAssembler.js`        | Collect parts in any order, verify, rebuild   |
+| `textscan/src/qr/reader.js`, `cameraScanner.js` | Image/video -> text (UTF-8)                   |
+| `textscan/src/ui/*`                             | DOM wiring for camera, upload and copy        |
+| `shared/protocol/textPackets.js`                | The `QRT1` contract: split text, parse a part |
+
+Short text is sent as a plain QR (readable by any scanner). Text that needs several codes uses the `QRT1` format (below). The format lives once in `shared/` and is copied into both features, so neither depends on the other. It is independent of `QRF1`.
+
+## Shared (`shared/`, copied into every feature)
+
+`config.js` (protocol, ZIP and time constants), `codec/{base64,crc32,compressor}.js`, `protocol/{packet,textPackets}.js`, `archive/folderArchive.js`, `time/duration.js`, `ui/{dom,assets}.js`.
 
 Edit only `shared/`, then `npm run sync`. `tests/structure.test.js` fails if a copy drifts and if one feature imports the other or the shell.
 
@@ -68,6 +84,18 @@ QRF1|<fileId>|<index>|<total>|<crc32>|<urlencoded filename>|<base64 data>
 - Parts may be scanned in any order; duplicates are ignored.
 
 This format is the only contract between generator and reader (`tests/contract.test.js`). To change it, add a new tag (e.g. `QRF2`) and a new parser rather than editing `QRF1`.
+
+## Text packet format (version `QRT1`)
+
+```
+QRT1|<id>|<index>|<total>|<crc32 hex>|<text chunk>
+```
+
+- `id`: random hex shared by all parts; `index`: zero-based part; `total`: number of parts
+- `crc32`: checksum (8 hex digits) of the whole text's UTF-8 bytes
+- The chunk is the rest of the line and may contain `|`. It is cut by characters, never inside an emoji.
+- A single short text has no header at all. If such text itself starts with `QRT1|`, it is wrapped as a one-part `QRT1` packet so it is read back unchanged.
+- To change the format add `QRT2` rather than editing `QRT1`.
 
 ## Folders
 

@@ -1,5 +1,5 @@
 /** Folder names the shell tries to plug in. Add a name here to support a new feature. */
-export const FEATURE_NAMES = ['generator', 'reader'];
+export const FEATURE_NAMES = ['generator', 'reader', 'textgen', 'textscan'];
 
 /**
  * @typedef {object} Feature

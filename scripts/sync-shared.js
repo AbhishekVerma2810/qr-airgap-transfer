@@ -2,7 +2,12 @@ import { cpSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 /** Features that receive a private copy of `shared/` so each folder stands alone. */
-export const TARGETS = ['generator/src/shared', 'reader/src/shared'];
+export const TARGETS = [
+  'generator/src/shared',
+  'reader/src/shared',
+  'textgen/src/shared',
+  'textscan/src/shared',
+];
 const SOURCE = 'shared';
 
 function listFiles(directory) {

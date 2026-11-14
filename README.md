@@ -4,15 +4,17 @@ _Move files and whole folders between machines using only QR codes: offline, no 
 
 Turn **any file or folder** into QR code(s) and rebuild the **exact same file or folder** by scanning them again. Everything runs in your browser, offline; nothing is uploaded.
 
-The app is made of two independent feature folders. Keep whichever you need:
+The app is made of three independent feature folders. Keep whichever you need:
 
 | Folders present   | What the app offers                          |
 | ----------------- | -------------------------------------------- |
 | `generator/` only | **Generate QR** tab (file/folder → QR codes) |
 | `reader/` only    | **Scan QR** tab (QR codes → file/folder)     |
-| both              | both tabs                                    |
+| `textgen/` only   | **Text to QR** tab (text → QR codes)         |
+| `textscan/` only  | **QR to Text** tab (QR codes → text)         |
+| any combination   | one tab for each folder present              |
 
-The page shell (`index.html`, `style.css`, `src/`) is always needed; it detects which folders exist and shows only those tabs. The two folders never import from each other, so deleting one is safe.
+The page shell (`index.html`, `style.css`, `src/`) is always needed; it detects which folders exist and shows only those tabs. The folders never import from each other, so deleting any of them is safe.
 
 ## Using it on two machines
 
@@ -30,6 +32,15 @@ npm start
 ```
 
 Open <http://localhost:8080>. Without Node you can run `python -m http.server 8080` in the folder instead. Camera access needs `localhost` or https.
+
+## Text to QR and QR to Text (`textgen/`, `textscan/`)
+
+Two small features for plain text (notes, links, snippets). Each is its own folder, so a machine can have either one or both:
+
+- **Text to QR** (`textgen/`): type or paste text and click **Create QR code**. Short text becomes one ordinary QR code that any phone scanner can read. Longer text becomes several numbered codes (up to 100). Emoji and every language work. Click a code to download it as a PNG.
+- **QR to Text** (`textscan/`): use the camera or upload QR images. The decoded text appears in a box with a **Copy text** button. Text made of several codes can be scanned in any order.
+
+Copy `index.html`, `style.css`, `src/` plus `textgen/` and/or `textscan/`.
 
 ## Generate QR codes
 

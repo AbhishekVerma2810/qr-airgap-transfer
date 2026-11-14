@@ -1,0 +1,16 @@
+#txt-output {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+}
+#txt-video {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  background: #000;
+  margin: 0.5rem 0;
+}
+#txt-video[hidden] {
+  display: none;
+}
