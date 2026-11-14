@@ -1,27 +1,42 @@
 /** HTML for the generator tab. */
 export const GENERATOR_HTML = `
-  <input type="file" id="gen-file" />
-  <button id="folder-button">Choose folder</button>
-  <button id="folder-compat-button">Choose folder (compatibility)</button>
-  <input type="file" id="gen-folder" webkitdirectory hidden />
-  <label class="inline">
-    <input type="checkbox" id="skip-heavy" checked /> Skip node_modules and .git
-  </label>
-  <p class="hint">Tick the box above before choosing a folder.</p>
-  <div id="folder-tree-box" hidden>
-    <p class="hint">Untick any file or folder you want to leave out.</p>
-    <button id="tree-all">Select all</button>
-    <button id="tree-none">Select none</button>
-    <div id="folder-tree"></div>
+  <div class="card">
+    <h2><span class="step">1</span> Choose what to convert</h2>
+    <div class="actions">
+      <input type="file" id="gen-file" />
+      <span class="or">or</span>
+      <button id="folder-button">Choose folder</button>
+      <button id="folder-compat-button" class="ghost">Choose folder (compatibility)</button>
+    </div>
+    <input type="file" id="gen-folder" webkitdirectory hidden />
+    <label class="check">
+      <input type="checkbox" id="skip-heavy" checked /> Skip node_modules and .git
+    </label>
+    <p class="hint">Tick the box before choosing a folder.</p>
+    <div id="folder-tree-box" hidden>
+      <p class="hint">Untick any file or folder you want to leave out.</p>
+      <div class="actions">
+        <button id="tree-all">Select all</button>
+        <button id="tree-none">Select none</button>
+      </div>
+      <div id="folder-tree"></div>
+    </div>
   </div>
-  <label>
-    Characters per QR: <output id="chunk-size-label"></output>
-    <input type="range" id="chunk-size" />
-  </label>
-  <p class="hint">Lower values make easier-to-scan codes but more of them.</p>
-  <button id="gen-button">Create QR codes</button>
-  <button id="download-all-button" hidden>Download all (ZIP)</button>
-  <button id="slideshow-button">Slideshow</button>
+  <div class="card">
+    <h2><span class="step">2</span> Create the QR codes</h2>
+    <label class="field">
+      Characters per QR: <output id="chunk-size-label"></output>
+      <input type="range" id="chunk-size" />
+    </label>
+    <p class="hint">Lower values make easier-to-scan codes but more of them.</p>
+    <div class="actions">
+      <button id="gen-button" class="primary">Create QR codes</button>
+      <button id="slideshow-button">Slideshow</button>
+      <button id="download-all-button" hidden>Download all (ZIP)</button>
+    </div>
+    <p id="gen-status" role="status"></p>
+    <div id="qr-grid" class="qr-results"></div>
+  </div>
   <div id="slideshow-controls" hidden>
     <span id="slide-info"></span>
     <label title="Jump to a part number">
@@ -35,7 +50,5 @@ export const GENERATOR_HTML = `
     </label>
     <button id="slideshow-stop">Stop (Esc)</button>
   </div>
-  <p id="gen-status" role="status"></p>
-  <div id="qr-grid"></div>
   <div id="slide-stage" hidden></div>
 `;

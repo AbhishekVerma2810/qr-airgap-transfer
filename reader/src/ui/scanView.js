@@ -71,6 +71,7 @@ function reset() {
   finished = false;
   pendingFolder = null;
   rate.reset();
+  byId('scan-video').hidden = true;
   byId('restore-button').hidden = true;
   renderProgress(assembler.progress);
   showStatus('');
@@ -78,9 +79,11 @@ function reset() {
 
 async function startCamera() {
   try {
+    byId('scan-video').hidden = false;
     await scanner.start(byId('scan-video'), handleText);
     showStatus('Point the camera at each QR code.');
   } catch {
+    byId('scan-video').hidden = true;
     showStatus('Camera unavailable. Use image upload instead.');
   }
 }

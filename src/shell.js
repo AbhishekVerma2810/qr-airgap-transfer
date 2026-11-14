@@ -6,6 +6,7 @@ function addTab(feature) {
   const button = document.createElement('button');
   button.textContent = feature.label;
   button.dataset.feature = feature.id;
+  button.setAttribute('role', 'tab');
   byId('tabs').append(button);
   const section = document.createElement('section');
   section.id = `tab-${feature.id}`;
@@ -16,7 +17,9 @@ function addTab(feature) {
 function showTab(id) {
   for (const section of byId('app').children) section.hidden = section.id !== `tab-${id}`;
   for (const button of byId('tabs').children) {
-    button.classList.toggle('active', button.dataset.feature === id);
+    const active = button.dataset.feature === id;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-selected', String(active));
   }
 }
 

@@ -1,20 +1,5 @@
-#qr-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-#qr-grid figure {
-  margin: 0;
-  text-align: center;
-}
-#qr-grid canvas {
-  width: 240px;
-  height: 240px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-}
-/* Slideshow: one QR code covers the whole page, as large and sharp as possible. */
+/* Slideshow: one QR code covers the whole page, as large and sharp as possible.
+   The stage stays white in dark mode too, because QR codes need a light background. */
 #slide-stage {
   position: fixed;
   inset: 0;
@@ -37,56 +22,96 @@
   font-size: 1.2rem;
   color: #333;
 }
-/* Small corner controls so the QR code keeps its size. */
+
+/* Small floating control bar so the QR code keeps its size. */
 #slideshow-controls {
   position: fixed;
-  top: 0.4rem;
-  right: 0.4rem;
+  top: 0.6rem;
+  right: 0.6rem;
   z-index: 1001;
   display: flex;
-  gap: 0.25rem;
+  flex-wrap: wrap;
+  gap: 0.3rem;
   align-items: center;
+  justify-content: flex-end;
+  max-width: calc(100vw - 1.2rem);
+  padding: 0.3rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(20, 24, 45, 0.88);
+  color: #fff;
   font-size: 0.75rem;
-  opacity: 0.7;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  opacity: 0.75;
+  transition: opacity 0.15s;
 }
-#slideshow-controls:hover {
+#slideshow-controls:hover,
+#slideshow-controls:focus-within {
   opacity: 1;
 }
 #slideshow-controls[hidden] {
   display: none;
 }
 #slideshow-controls button {
-  padding: 0.15rem 0.45rem;
+  padding: 0.2rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 0.75rem;
+}
+#slideshow-controls button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.28);
+}
+#slideshow-controls input {
+  padding: 0.15rem 0.4rem;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
   font-size: 0.75rem;
 }
 #slide-speed,
 #slide-jump {
   width: 4.5rem;
-  font-size: 0.75rem;
 }
 #slide-info {
-  padding: 0.15rem 0.4rem;
-  background: #fff;
-  border: 1px solid #ccc;
+  padding: 0 0.4rem;
+  font-weight: 600;
   white-space: nowrap;
 }
+
 /* Folder tree with checkboxes. */
 #folder-tree {
   max-height: 320px;
-  overflow: auto;
   margin: 0.5rem 0;
-  padding: 0.25rem 0.5rem;
-  border: 1px solid #ccc;
+  padding: 0.5rem 0.75rem;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
   font-size: 0.9rem;
 }
 #folder-tree ul {
   list-style: none;
   margin: 0;
-  padding-left: 1.2rem;
+  padding-left: 1.3rem;
 }
 #folder-tree > ul {
   padding-left: 0;
 }
+#folder-tree li {
+  padding: 0.1rem 0;
+}
 #folder-tree summary {
   cursor: pointer;
+}
+#folder-tree label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+}
+#folder-tree span {
+  color: var(--text);
 }

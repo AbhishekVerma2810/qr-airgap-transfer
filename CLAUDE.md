@@ -15,6 +15,7 @@ Offline browser app, plug-and-play: `generator/`, `reader/`, `textgen/` and `tex
 - Code both need lives once in `shared/`; edit it there and run `npm run sync`. Never edit `*/src/shared/` by hand.
 - Adding a feature: new folder with `feature.js`, then add its name to `FEATURE_NAMES` in `src/featureLoader.js`.
 - Follow SOLID; keep codec/protocol/archive code DOM-free; vendored libs (`*/lib/`) are not edited and are only used from the `qr/` modules.
+- UI: use the design system in `style.css` (cards, `.actions`, `.primary`, CSS variables); a feature's own CSS holds only what is unique to it.
 - Complexity must stay low: lint enforces complexity ≤ 5, ≤ 20 lines/function. Fix violations, don't disable the rules.
 - Constants go in `shared/config.js` (used by both) or `<feature>/src/config.js`; JSDoc every export.
 - Packet format `QRF1` is stable; add `QRF2` for changes. Update `docs/ARCHITECTURE.md` and tests with any protocol change.

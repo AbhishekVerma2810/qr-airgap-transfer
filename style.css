@@ -1,18 +1,451 @@
+/* ==========================================================================
+   Design system for the whole app. Features add only what is unique to them.
+   ========================================================================== */
+
+:root {
+  --bg: #f4f5fb;
+  --surface: #ffffff;
+  --surface-2: #eef0f8;
+  --border: #e1e4f0;
+  --text: #1a1f2e;
+  --muted: #667085;
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-soft: #eceeff;
+  --on-accent: #ffffff;
+  --ok: #0f8a5f;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(20, 24, 50, 0.06), 0 6px 20px rgba(20, 24, 50, 0.07);
+  --ring: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1120;
+    --surface: #171b2e;
+    --surface-2: #1f2440;
+    --border: #2a3052;
+    --text: #e8eaf4;
+    --muted: #9aa3c0;
+    --accent: #8188ff;
+    --accent-hover: #9aa0ff;
+    --accent-soft: #262d5a;
+    --on-accent: #0e1120;
+    --ok: #3ddc97;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --ring: 0 0 0 3px rgba(129, 136, 255, 0.4);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: system-ui, sans-serif;
-  max-width: 960px;
-  margin: 1rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  max-width: 980px;
+  padding: 1.5rem 1.25rem 3rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  line-height: 1.55;
 }
-nav button.active {
-  font-weight: bold;
-  text-decoration: underline;
+
+/* ---- Header and tabs --------------------------------------------------- */
+
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
-button,
-input[type='file'] {
-  margin: 0.25rem 0.25rem 0.25rem 0;
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
 }
-.hint {
-  color: #666;
+
+.logo {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
+}
+
+.brand p {
+  margin: 0;
+  color: var(--muted);
   font-size: 0.9rem;
+}
+
+nav#tabs {
+  display: flex;
+  gap: 0.25rem;
+  max-width: 100%;
+  padding: 0.25rem;
+  overflow-x: auto;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+nav#tabs button {
+  flex: none;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+nav#tabs button:hover {
+  color: var(--text);
+  background: transparent;
+}
+
+nav#tabs button.active {
+  background: var(--surface);
+  color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+/* ---- Cards and headings ------------------------------------------------ */
+
+.card {
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.card h2,
+section > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+}
+
+.step {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0.4rem 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* ---- Buttons ----------------------------------------------------------- */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.5rem 0;
+}
+
+button {
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.05s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button.primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+button.ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* ---- Form controls ----------------------------------------------------- */
+
+textarea,
+input[type='number'] {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+textarea {
+  display: block;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+}
+
+input[type='number'] {
+  width: auto;
+}
+
+input[type='range'],
+input[type='checkbox'] {
+  accent-color: var(--accent);
+}
+
+input[type='range'] {
+  width: 100%;
+  max-width: 420px;
+}
+
+input[type='file'] {
+  max-width: 100%;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+input[type='file']::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+input[type='file']::file-selector-button:hover {
+  background: var(--surface-2);
+}
+
+.field {
+  display: block;
+  margin: 0.75rem 0;
+  font-weight: 600;
+}
+
+.field output {
+  color: var(--accent);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0;
+  cursor: pointer;
+}
+
+.or {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ---- Status, progress, video ------------------------------------------- */
+
+[role='status']:not(:empty):not(.percent) {
+  margin: 0.9rem 0 0.25rem;
+  padding: 0.65rem 0.9rem;
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+}
+
+.percent {
+  margin: 0 0 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+progress {
+  display: block;
+  width: 100%;
+  height: 12px;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-2);
+  appearance: none;
+}
+
+progress::-webkit-progress-bar {
+  background: var(--surface-2);
+}
+
+progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--ok));
+}
+
+progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+video {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  margin: 0.75rem 0;
+  border-radius: var(--radius);
+  background: #000;
+  box-shadow: var(--shadow);
+}
+
+video[hidden] {
+  display: none;
+}
+
+/* ---- QR code results --------------------------------------------------- */
+
+.qr-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.qr-results figure {
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: transform 0.15s;
+}
+
+.qr-results figure:hover {
+  transform: translateY(-2px);
+}
+
+.qr-results canvas {
+  display: block;
+  width: 220px;
+  height: 220px;
+  border-radius: 8px;
+  cursor: pointer;
+  image-rendering: pixelated;
+}
+
+.qr-results figcaption {
+  margin-top: 0.4rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ---- Empty state and footer -------------------------------------------- */
+
+.empty {
+  padding: 2rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+}
+
+.app-footer {
+  margin-top: 2rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+  background: var(--surface-2);
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 1rem 0.85rem 2rem;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .qr-results canvas {
+    width: 100%;
+    height: auto;
+    max-width: 280px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }

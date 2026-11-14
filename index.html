@@ -3,17 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>QR Airgap Transfer</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>File &harr; QR Code</h1>
-    <nav id="tabs"></nav>
+    <header class="app-header">
+      <div class="brand">
+        <svg
+          class="logo"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <rect x="3" y="3" width="7" height="7" rx="1.5" />
+          <rect x="14" y="3" width="7" height="7" rx="1.5" />
+          <rect x="3" y="14" width="7" height="7" rx="1.5" />
+          <path d="M14 14h3v3m4-3v7h-4m-3-1v1" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <h1>QR Airgap Transfer</h1>
+          <p>Move files, folders and text between machines using only QR codes.</p>
+        </div>
+      </div>
+      <nav id="tabs" role="tablist" aria-label="Features"></nav>
+    </header>
     <main id="app"></main>
-    <p id="empty-message" class="hint" hidden>
-      No feature folders found. Put a <code>generator</code> and/or <code>reader</code> folder next
-      to this page.
+    <p id="empty-message" class="empty" hidden>
+      No feature folders found. Put a <code>generator</code>, <code>reader</code>,
+      <code>textgen</code> or <code>textscan</code> folder next to this page.
     </p>
+    <footer class="app-footer">Runs entirely in your browser. Nothing is uploaded.</footer>
     <script type="module" src="src/shell.js"></script>
   </body>
 </html>

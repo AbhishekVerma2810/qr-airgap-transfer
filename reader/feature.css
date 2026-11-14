@@ -1,16 +1,5 @@
-#scan-video {
-  display: block;
-  width: 100%;
-  max-width: 480px;
-  background: #000;
-  margin: 0.5rem 0;
-}
-#scan-progress {
-  width: 100%;
-  max-width: 480px;
-}
-.percent {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin: 0.25rem 0;
+/* The reader uses the shared design system (style.css); nothing feature-specific yet. */
+#scan-summary {
+  margin: 0.5rem 0 0;
+  font-weight: 600;
 }

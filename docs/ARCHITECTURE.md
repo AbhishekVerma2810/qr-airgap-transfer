@@ -100,3 +100,7 @@ QRT1|<id>|<index>|<total>|<crc32 hex>|<text chunk>
 ## Folders
 
 A folder is packed into one store-only ZIP and sent through the normal file pipeline under the name `folder:<name>.zip`; the `folder:` prefix tells the reader to restore a tree instead of downloading a file. Compression happens in the deflate step; the whole-archive CRC-32 is verified by the assembler and every ZIP entry has its own CRC-32.
+
+## Look and feel
+
+`style.css` is the single design system: colour tokens (light and dark mode follow the device setting), buttons, cards, form controls, progress bar, status messages and the QR result tiles. Features add only rules unique to them in their own `feature.css`. To keep new features consistent, build a tab from `.card` blocks with a numbered `<h2><span class="step">`, group buttons in `.actions`, mark the main action with `class="primary"`, show results in `.qr-results`, and use the CSS variables (`var(--accent)`, `var(--border)`, ...) instead of fixed colours. The slideshow overlay deliberately stays white in dark mode because QR codes need a light background.
